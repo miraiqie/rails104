@@ -10,8 +10,11 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(group_params)
-    @group.save
-    redirect_to root_path, alert: "Create Success. "
+    if @group.save
+      redirect_to root_path, alert: "Create Success. "
+    else
+      render :new
+    end
   end
 
   def show
