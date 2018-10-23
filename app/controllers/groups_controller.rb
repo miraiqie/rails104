@@ -28,6 +28,12 @@ class GroupsController < ApplicationController
     redirect_to root_path, notice: "Eidt Group Success."
   end
 
+  def destroy
+    @group = Group.find(params[:id])
+    @group.destroy
+    redirect_to root_path, alert: "Delete Group Success."
+  end
+
   private
 
   def group_params
