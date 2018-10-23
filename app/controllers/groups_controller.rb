@@ -14,6 +14,9 @@ class GroupsController < ApplicationController
     redirect_to root_path, alert: "Create Success. "
   end
 
+  def show
+    @group = Group.find(params[:id])
+  end
 
   private
 
