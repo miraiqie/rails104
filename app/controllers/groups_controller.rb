@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :authenticate_user! , only: [:new, :create, :edit, :update, :destroy]
+  before_action :authenticate_user! , only: [:new, :create, :edit, :update, :destroy, :join, :quit]
   before_action :find_group_and_check_permission, only: [:edit, :update, :destroy]
   def index
     @groups = Group.all
@@ -13,6 +13,7 @@ class GroupsController < ApplicationController
     @group = Group.new(group_params)
     @group.user = current_user
     if @group.save
+      current_user.join!(@group)
       redirect_to root_path, alert: "Create Success. "
     else
       render :new
@@ -38,6 +39,32 @@ class GroupsController < ApplicationController
   def destroy
     @group.destroy
     redirect_to root_path, alert: "Delete Group Success."
+  end
+
+  def join
+    @group = Group.find(params[:id])
+
+     if !current_user.is_member_of?(@group)
+       current_user.join!(@group)
+       flash[:notice] = "加入本讨论组成功！"
+     else
+       flash[:warning] = "你已经是本讨论组成员！"
+     end
+
+     redirect_to group_path(@group)
+  end
+
+  def quit
+    @group = Group.find(params[:id])
+
+    if current_user.is_member_of?(@group)
+      current_user.quit!(@group)
+      flash[:alert] = "已经退出本讨论版！"
+    else
+      flash[:warning] = "你不是本讨论版成员，怎么退出！！！"
+    end
+
+    redirect_to group_path(@group)
   end
 
   private
